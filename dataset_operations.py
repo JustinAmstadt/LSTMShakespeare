@@ -22,6 +22,17 @@ def create_token_to_index_mapping():
 stoi, itos, chars = create_token_to_index_mapping()
 
 
+def _make_and_split_dataset():
+    text = read_dataset()
+    X, Y = create_char_sequences(
+        text, seq_length=Hyperparameters.sequence_length, stride=1
+    )
+    (X_train, Y_train), (X_dev, Y_dev), (X_test, Y_test) = (
+        split_dataset_chronologically(X, Y)
+    )
+    return X_train, Y_train, X_dev, Y_dev, X_test, Y_test
+
+
 def create_char_sequences(text, seq_length=10, stride=1):
     X = []
     Y = []
@@ -77,14 +88,4 @@ def decode(tokens, itos):
     return "".join([itos[i] for i in tokens])
 
 
-# Create full dataset
-text = read_dataset()
-X, Y = create_char_sequences(text, seq_length=Hyperparameters.sequence_length, stride=1)
-
-# Split into train/dev/test
-(X_train, Y_train), (X_dev, Y_dev), (X_test, Y_test) = split_dataset_chronologically(
-    X, Y
-)
-
-# Keep the original X, Y for backward compatibility, but now they represent the full dataset
-# Use X_train, Y_train for training, X_dev, Y_dev for validation, X_test, Y_test for testing
+X_train, Y_train, X_dev, Y_dev, X_test, Y_test = _make_and_split_dataset()
