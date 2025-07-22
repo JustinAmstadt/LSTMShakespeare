@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from dataset_operations import stoi
 
+
 class CharLSTM(nn.Module):
     def __init__(self, vocab_size, hidden_size, num_layers):
         super().__init__()
@@ -14,7 +15,7 @@ class CharLSTM(nn.Module):
 
     def forward(self, x, hidden=None):
         # x shape: (batch, seq_len)
-        embed = self.embedding(x)             # (batch, seq_len, hidden)
+        embed = self.embedding(x)  # (batch, seq_len, hidden)
         out, hidden = self.lstm(embed, hidden)
-        out = self.fc(out)                    # (batch, seq_len, vocab_size)
+        out = self.fc(out)  # (batch, seq_len, vocab_size)
         return out, hidden
