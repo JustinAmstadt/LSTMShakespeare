@@ -40,7 +40,9 @@ def main():
     test_loss = evaluate_model(model, test_dataloader, criterion)
     print(f"Test Loss: {test_loss:.4f}")
 
-    save_model(model, path=f"shakespeare_lstm_model-{str(Hyperparameters)}.pth")
+    hyperparameters = Hyperparameters()
+
+    save_model(model, path=f"shakespeare_lstm_model-{str(hyperparameters)}.pth")
 
 
 if __name__ == "__main__":

@@ -54,6 +54,7 @@ def train_model(model, train_dataloader, criterion, optimizer, epochs=100):
 
 
 def evaluate_model(model, dataloader, criterion):
+    model.eval()
     total_loss = 0
     num_batches = 0
     for inputs, targets in dataloader:
