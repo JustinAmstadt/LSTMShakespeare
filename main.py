@@ -4,6 +4,7 @@ from torch.utils.data import DataLoader, TensorDataset
 
 from dataset_operations import (X_dev, X_test, X_train, Y_dev, Y_test, Y_train,
                                 chars)
+from device import get_device
 from hyperparameters import Hyperparameters
 from nn import CharLSTM
 from train import evaluate_model, save_model, train_model
@@ -15,11 +16,13 @@ def _create_dataloaders(X, Y):
 
 
 def _make_model():
+    device = get_device()
     model = CharLSTM(
         vocab_size=len(chars),
         hidden_size=Hyperparameters.lstm_hidden_size,
         num_layers=Hyperparameters.lstm_num_layers,
     )
+    model.to(device)
     return model
 
 

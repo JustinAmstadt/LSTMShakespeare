@@ -3,6 +3,7 @@ import torch.nn as nn
 
 from dataset_operations import (X_dev, X_test, X_train, Y_dev, Y_test, Y_train,
                                 chars)
+from device import get_device
 
 
 def _calculate_loss(criterion, output, targets):
@@ -24,17 +25,26 @@ def _convert_targets(targets):
 
 
 def train_model(model, train_dataloader, criterion, optimizer, epochs=100):
+    device = get_device()
+    print(f"Using device: {device}")
     print(f"Train dataset size: {len(X_train)} sequences")
     print(f"Dev dataset size: {len(X_dev)} sequences")
     print(f"Test dataset size: {len(X_test)} sequences")
     print(f"Vocabulary size: {len(chars)}")
     print(f"Sample input shape: {X_train[0].shape}, target: {Y_train[0]}")
 
+    # Move model to device
+    model = model.to(device)
+
     for epoch in range(epochs):
         total_loss = 0
         num_batches = 0
         count = 0
         for inputs, targets in train_dataloader:
+            # Move data to device
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+            
             # Inputs will be (batch_size, sequence_length)
             targets = _convert_targets(targets)
 
@@ -54,15 +64,20 @@ def train_model(model, train_dataloader, criterion, optimizer, epochs=100):
 
 
 def evaluate_model(model, dataloader, criterion):
-    model.eval()
+    device = get_device()
     total_loss = 0
     num_batches = 0
-    for inputs, targets in dataloader:
-        targets = _convert_targets(targets)
-        output, _ = model.forward(inputs)
-        loss = _calculate_loss(criterion, output, targets)
-        total_loss += loss.item()
-        num_batches += 1
+    with torch.no_grad():
+        for inputs, targets in dataloader:
+            # Move data to device
+            inputs = inputs.to(device)
+            targets = targets.to(device)
+            
+            targets = _convert_targets(targets)
+            output, _ = model.forward(inputs)
+            loss = _calculate_loss(criterion, output, targets)
+            total_loss += loss.item()
+            num_batches += 1
     return total_loss / num_batches
 
 
